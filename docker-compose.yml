@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  app:
+    image: ruby
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - app.env
