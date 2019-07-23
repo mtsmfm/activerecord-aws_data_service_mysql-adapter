@@ -16,7 +16,26 @@ module ActiveRecord
 
       include MySQL::DatabaseStatements
 
+      def initialize(*)
+        super
+        @prepared_statements = false
+      end
+
+      def each_hash(result)
+        if block_given?
+          result.each(as: :hash, symbolize_keys: true) do |row|
+            yield row
+          end
+        else
+          to_enum(:each_hash, result)
+        end
+      end
+
       private
+
+      def error_number(exception)
+        exception.error_number if exception.respond_to?(:error_number)
+      end
 
       def full_version
         @full_version ||= @connection.server_info[:version]
