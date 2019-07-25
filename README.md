@@ -1,4 +1,4 @@
-# [WIP] Activerecord::AwsDataServiceMysql::Adapter
+# Activerecord::AwsDataServiceMysql::Adapter
 
 ## Installation
 
