@@ -66,11 +66,8 @@ module ActiveRecord
           # nop
         end
 
-        def more_results?
-          # TODO
-          # May need to consider stored procedure
-          # ref: https://github.com/rails/rails/pull/21932
-          false
+        def abandon_results!
+          # nop
         end
 
         def affected_rows
