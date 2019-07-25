@@ -1,0 +1,8 @@
+{
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/app",
+  "extensions": ["rebornix.ruby"],
+  "postCreateCommand": "cp -Tr /original /app",
+  "shutdownAction": "stopCompose"
+}
