@@ -31,6 +31,30 @@ module ActiveRecord
         end
       end
 
+      def begin_db_transaction
+        log('BEGIN') do
+          ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+            @connection.begin_db_transaction
+          end
+        end
+      end
+
+      def commit_db_transaction
+        log('COMMIT') do
+          ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+            @connection.commit_db_transaction
+          end
+        end
+      end
+
+      def exec_rollback_db_transaction
+        log('ROLLBACK') do
+          ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+            @connection.exec_rollback_db_transaction
+          end
+        end
+      end
+
       private
 
       def error_number(exception)

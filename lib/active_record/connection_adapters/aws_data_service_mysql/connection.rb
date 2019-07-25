@@ -87,12 +87,28 @@ module ActiveRecord
           }
         end
 
+        def begin_db_transaction
+          @current_transaction = client.begin_transaction(secret_arn: secret_arn, resource_arn: resource_arn, database: database)
+        end
+
+        def commit_db_transaction
+          client.commit_transaction(secret_arn: secret_arn, resource_arn: resource_arn, transaction_id: @current_transaction.transaction_id)
+          @current_transaction = nil
+        end
+
+        def exec_rollback_db_transaction
+          client.rollback_transaction(secret_arn: secret_arn, resource_arn: resource_arn, transaction_id: @current_transaction.transaction_id)
+          @current_transaction = nil
+        end
+
         private
 
         attr_reader :client, :secret_arn, :resource_arn, :database
 
         def _query(sql, **options)
-          @last_result = client.execute_statement(secret_arn: secret_arn, resource_arn: resource_arn, sql: sql, database: database, include_result_metadata: true)
+          @last_result = client.execute_statement(
+            secret_arn: secret_arn, resource_arn: resource_arn, sql: sql, database: database, include_result_metadata: true, transaction_id: @current_transaction&.transaction_id
+          )
           Result.new(@last_result, **options)
         rescue Aws::RDSDataService::Errors::BadRequestException => error
           if error.message.include?("No database selected")

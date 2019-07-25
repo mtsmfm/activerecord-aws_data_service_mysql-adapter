@@ -37,6 +37,11 @@ class Comment < ActiveRecord::Base
 end
 
 class BugTest < Minitest::Test
+  def setup
+    Post.destroy_all
+    Comment.destroy_all
+  end
+
   def test_association_stuff
     post = Post.create!
     post.comments << Comment.create!
@@ -44,5 +49,20 @@ class BugTest < Minitest::Test
     assert_equal 1, post.comments.count
     assert_equal 1, Comment.count
     assert_equal post.id, Comment.first.post.id
+  end
+
+  def test_transaction
+    assert_equal 0, Post.count
+
+    Post.transaction do
+      Post.create!
+      Post.transaction(requires_new: true) do
+        Post.create!
+
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    assert_equal 1, Post.count
   end
 end
